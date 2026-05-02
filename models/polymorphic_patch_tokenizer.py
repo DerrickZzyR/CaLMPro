@@ -247,6 +247,18 @@ class PolymorphicPatchTokenizer(nn.Module):
         instance_logits = self.head(x)
         weighted_instance_logits = instance_logits * end_attn_x_score
         cls_logits = torch.mean(weighted_instance_logits, dim=1)
+
+        valid_patch_mask = global_idx != -1
+        valid_patch_counts = valid_patch_mask.sum(dim=1)
+        max_valid_patches = int(valid_patch_counts.max().item()) if valid_patch_counts.numel() > 0 else 0
+
+        patch_tokens = x.new_zeros((x.shape[0], max_valid_patches, x.shape[2]))
+        patch_mask = torch.zeros((x.shape[0], max_valid_patches), dtype=torch.bool, device=x.device)
+        for b in range(x.shape[0]):
+            n_valid = int(valid_patch_counts[b].item())
+            if n_valid > 0:
+                patch_tokens[b, :n_valid] = x[b, valid_patch_mask[b]]
+                patch_mask[b, :n_valid] = True
         global_idx = [gi[gi != -1] for gi in global_idx] # 去除全局索引中的虚拟索引-1，得到最终保留的token的全局索引列表
 
-        return cls_logits, moe_loss, global_idx, x_norm, x[:, :len(global_idx), :]
+        return cls_logits, moe_loss, global_idx, x_norm, patch_tokens, patch_mask

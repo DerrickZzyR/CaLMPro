@@ -260,7 +260,7 @@ class calmproTrainer(BaseTrainer):
                 target_slice = batch_X[:, args.win_size:, :]
                 current_stats = target_slice / (max_feature)
                 
-                logits, moe_loss, _, _, _ = ss_net(res, current_stats, num_epoch_i=epoch, warm_up_epoch=args.warm_up_epoch)
+                logits, moe_loss, _, _, _, _ = ss_net(res, current_stats, num_epoch_i=epoch, warm_up_epoch=args.warm_up_epoch)
                 
                 cls_loss = loss_fn(logits, batch_y)
                 total_loss = cls_loss + args.moeloss_rate * moe_loss
@@ -429,7 +429,7 @@ class calmproTrainer(BaseTrainer):
                 target_slice = batch_X[:, args.win_size:, :]
                 current_stats = target_slice / max_fea
 
-                _, _, idx, _, _ = ss_net(res, current_stats)
+                _, _, idx, _, _, _ = ss_net(res, current_stats)
 
                 raw_np = batch_X.squeeze(0).cpu().numpy()
                 pred_np = pred_raw.squeeze(0).cpu().numpy()
@@ -611,9 +611,9 @@ class calmproTrainer(BaseTrainer):
                     _, _, _, res, _ = cmlp(batch_X)
                     target_slice = batch_X[:, args.win_size:, :]
                     current_stats = target_slice / max_fea
-                    _, _, _, _, patch_tokens = ss_net(res, current_stats)
+                    _, _, _, _, patch_tokens, patch_mask = ss_net(res, current_stats)
 
-                logits = patch_cls(patch_tokens, txt_feat_batch)
+                logits = patch_cls(patch_tokens, txt_feat_batch, patch_mask=patch_mask)
                 loss = loss_fn(logits, batch_y)
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(patch_cls.parameters(), max_norm=1.0)
@@ -733,7 +733,7 @@ class calmproTrainer(BaseTrainer):
                 target_slice = batch_X[:, args.win_size:, :]
                 current_stats = target_slice / max_feature
 
-                logits, _, _, _, _ = ss_net(res, current_stats)
+                logits, _, _, _, _, _ = ss_net(res, current_stats)
                 preds = torch.argmax(logits, dim=1)
 
                 ssn_preds.append(preds.cpu())
@@ -773,9 +773,9 @@ class calmproTrainer(BaseTrainer):
                 _, _, _, res, _ = cmlp(batch_X)
                 target_slice = batch_X[:, args.win_size:, :]
                 current_stats = target_slice / max_feature
-                _, _, _, _, patch_tokens = ss_net(res, current_stats)
+                _, _, _, _, patch_tokens, patch_mask = ss_net(res, current_stats)
 
-                logits = patch_cls(patch_tokens, txt_feat_batch)
+                logits = patch_cls(patch_tokens, txt_feat_batch, patch_mask=patch_mask)
                 preds = torch.argmax(logits, dim=1)
 
                 patch_preds.append(preds.cpu())
