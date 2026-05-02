@@ -546,7 +546,7 @@ class calmproTrainer(BaseTrainer):
         id_to_idx = {k: i for i, k in enumerate(txt_ids)}
 
         patch_cls = MultiPatchTextFusionModelDirect_6way(embed_dim=args.emb_dim, num_classes=2).to(args.device)
-        patch_cls.load_state_dict(torch.load(args.patch_cls_ckpt_path, map_location=args.device))
+        patch_cls.load_state_dict(torch.load(args.cls_path, map_location=args.device))
 
         optimizer = torch.optim.AdamW(patch_cls.parameters(), lr=args.lr_cls, weight_decay=args.weight_decay)
 
@@ -666,7 +666,7 @@ class calmproTrainer(BaseTrainer):
         print(f"CLS Training Done. Best @ Epoch {best_epoch}, Loss {min_train_loss:.4f}")
 
     def test(self, args):
-        if not args.test_ssn and not args.test_patch_cls:
+        if not args.test_ssn and not args.test_cls:
             print('两个测试选项都未启用, 直接退出')
             return
         
@@ -705,7 +705,7 @@ class calmproTrainer(BaseTrainer):
         ss_net.eval()
 
         patch_cls = MultiPatchTextFusionModelDirect_6way(embed_dim=args.emb_dim, num_classes=2).to(args.device)
-        patch_cls.load_state_dict(torch.load(args.patch_cls_ckpt_path, map_location=args.device))
+        patch_cls.load_state_dict(torch.load(args.cls_path, map_location=args.device))
         patch_cls.eval()
 
         print('ALL models loaded successfully')

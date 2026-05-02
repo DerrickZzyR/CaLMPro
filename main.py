@@ -123,7 +123,7 @@ if __name__ == '__main__':
 
     args.ckpt_path = os.path.join('checkpoints', f'{args.model}_win_{args.win_size}_lr{args.lr}_batchsize{args.backbone_batch_size}.pth')
     args.SSN_path = os.path.join('checkpoints', f'softshape_embdim{args.emb_dim}_affine{args.affine}_a{args.alpha}_shsi{args.shape_size}_shst{args.shape_stride}_spra{args.sparse_rate}_attehdim{args.attention_head_dim}_lr{args.lr_ssn}_batchsize{args.ssn_batch_size}.pth')
-    args.cls_path = os.path.join('checkpoints', f'{args.model}_cls_head_ssnattehdim{args.attention_head_dim}_ssnlr{args.lr_ssn}_ssnbatchsize{args.ssn_batch_size}_lr{args.lr_cls}_batchsize{args.cls_batch_size}_{args.patchmodel}.pth')
+    args.cls_path = os.path.join('checkpoints', f'{args.model}_cls_head_ssnattehdim{args.attention_head_dim}_ssnlr{args.lr_ssn}_ssnbatchsize{args.ssn_batch_size}_lr{args.lr_cls}_batchsize{args.cls_batch_size}.pth')
     
     os.makedirs('checkpoints', exist_ok=True)
     os.makedirs('dataset', exist_ok=True)
